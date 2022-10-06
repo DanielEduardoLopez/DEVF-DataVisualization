@@ -1,4 +1,16 @@
-# Dashboard
+### DASHBOARD DE SERVICIOS PROFESIONALES, CIENTÍFICOS y TÉCNICOS EN MÉXICO EN 2022
+
+"""
+By Daniel Eduardo López
+Date: 2022-10-05
+GitHub: https://github.com/DanielEduardoLopez
+LinkedIn: https://www.linkedin.com/in/daniel-eduardo-lopez
+"""
+
+#!pip install dash
+
+# Run this app with 'python 4-Dashboard.py' and
+# visit http://127.0.0.1:8050/ in your web browser.
 
 import numpy as np
 import pandas as pd
@@ -13,12 +25,11 @@ import plotly.express as px
 df = pd.read_csv('https://raw.githubusercontent.com/DanielEduardoLopez/DEVF-DataVisualization/main/denue_inegi_54_.csv', encoding = 'ISO-8859-1') 
 
 # Options for dropdown
-options = list(set(df['nombre_act'].values))
+options = sorted(list(set(df['nombre_act'].values)))
 
 # Configuration parameters for the Graphs style
 gwidth = '30%' # Graphs width
 gheight = '30%'  # Graphs height
-margin_top = '-300px' # Margin top for charts
 
 # Función para convertir los rangos de personas empleadas en números enteros
 def cleaner(x):
@@ -47,6 +58,7 @@ def barchart(df):
   df_act = df.groupby(by = 'nombre_act', as_index = False).agg(count = ('nombre_act', 'size')).\
           sort_values(by = 'count', ascending = False)
   df_act_top = df_act.head(10)
+  df_act_top['nombre_act'] = df_act_top['nombre_act'].map(lambda x: x[:30])
     
   palette = ['silver',]*9
   palette.insert(9, px.colors.sequential.Blues_r[0])
@@ -56,9 +68,10 @@ def barchart(df):
               opacity= 0.8,
               labels = {"nombre_act": "Actividad profesional y/o técnica", "count": "Número de organizaciones"}
               )
-  fig.update_layout(title_x=0.5, font=dict(size=11))
+  fig.update_layout(title_x=0.5, font=dict(size=10))
   fig.update_traces(marker_color=palette, marker_line_color='white', marker_line_width=1)
-  fig.add_annotation(x=20000, y=7.5,
+  """
+  fig.add_annotation(x=40000, y=7.5,
               text='Los bufetes jurídicos <br>son las organizaciones de <br>servicios profesionales y técnicos <br>más comunes en el país.',
               showarrow=False,
               yshift=0,
@@ -67,11 +80,11 @@ def barchart(df):
               size=10,
               color="Black"
               ))
-  
+  """
   return fig
 
 # Treemap
-def treemap(df, act = "Servicios de diseño de sistemas de cómputo y servicios relacionados"):
+def treemap(df):
   df = df[df['nombre_act'] == act]
   df_org = df.groupby(by = 'raz_social', as_index = False).\
           agg(count = ('raz_social', 'size')).sort_values(by = 'count', ascending = False)
@@ -93,9 +106,9 @@ def treemap(df, act = "Servicios de diseño de sistemas de cómputo y servicios 
   return fig
 
 # Scatterplot
-def scatter(df, act = "Servicios de diseño de sistemas de cómputo y servicios relacionados"):
-  df_org = df[df['nombre_act'] == act]
-  df_org = df_org.groupby(by = 'raz_social', as_index = False).\
+def scatter(df):
+  
+  df_org = df.groupby(by = 'raz_social', as_index = False).\
           agg(count = ('raz_social', 'size')).sort_values(by = 'count', ascending = False)
   df_org['raz_social'] = df_org['raz_social'].map(lambda x: x[:30].title().replace('Sa De Cv', 'SA de CV').\
                                                   replace('S De Rl', 'S de RL').replace('Cv', 'CV').replace('Sc', 'SC'))
@@ -115,7 +128,7 @@ def scatter(df, act = "Servicios de diseño de sistemas de cómputo y servicios 
                   opacity= 0.8,
                   )
   fig.update_layout(title_x=0.5, 
-                    font=dict(size=11), 
+                    font=dict(size=10), 
                     showlegend=False,
                     )
 
@@ -126,9 +139,9 @@ def scatter(df, act = "Servicios de diseño de sistemas de cómputo y servicios 
     else:
       fig.add_shape(type='line', y0=index, y1= index, x0=np.min(df_org_top['count']), x1= value[1], xref='x',
                   yref='y', line=dict(color= 'silver'), opacity= 0.7)
-
+  """
   top = df_org_top.iloc[0:1]['raz_social'].values[0]
-
+  
   fig.add_annotation(x=value[1], y=10,
               text=f'La organización con más <br> establecimientos en el país es <br> {top}.',
               showarrow=False,
@@ -137,12 +150,13 @@ def scatter(df, act = "Servicios de diseño de sistemas de cómputo y servicios 
               #family="sans-serif",
               size=10,
               color="Black"
-              ))
+               ))
+   """
   return fig
 
 # Donut chart
 
-def donutchart(df, act = "Servicios de diseño de sistemas de cómputo y servicios relacionados"):
+def donutchart(df, act):
   df_percen = df.groupby(by = 'nombre_act', as_index = False).agg(count = ('nombre_act', 'size')).sort_values(by = 'count', ascending = False)
   df_percen.loc[~(df_percen['nombre_act'] == act), 'nombre_act'] = 'Otros'
   df_percen = df_percen.groupby('nombre_act').agg(total = ('count','sum')).sort_values(by = 'total').reset_index()
@@ -155,7 +169,8 @@ def donutchart(df, act = "Servicios de diseño de sistemas de cómputo y servici
   fig.update_layout(title_x=0.5, font=dict(size=11), showlegend=False)
   fig.update_traces(hoverinfo='label+percent+name', textinfo='percent', textfont_size=14,
                       marker=dict(colors=colors, line=dict(color='white', width=4)))
-  fig.add_annotation(x=1, y=0.5,
+  """
+  fig.add_annotation(x=1.35, y=0.5,
               text=f'Las organizaciones de <br> {act} <br> representaron el {percentage:.0f}% de las organizaciones <br>oferentes de servicios profesionales y <br>técnicos en México.',
               showarrow=False,
               yshift=0,
@@ -164,12 +179,13 @@ def donutchart(df, act = "Servicios de diseño de sistemas de cómputo y servici
               size=10,
               color="Black"
               ))
+  """
   return fig
 
 # Choropleth Map
-def mapa(df, act = 'Servicios de diseño de sistemas de cómputo y servicios relacionados'):
+def mapa(df):
   
-  df_map = df[df['nombre_act'] == act].\
+  df_map = df.\
             groupby(by = 'entidad', as_index = False).agg(count = ('nombre_act','size')).\
             sort_values(by = 'count', ascending = False)
   df_map['percentage'] = (df_map['count'] / np.sum(df_map['count'])) *100
@@ -211,7 +227,7 @@ def mapa(df, act = 'Servicios de diseño de sistemas de cómputo y servicios rel
   states_df = pd.DataFrame.from_dict(states_dict, orient='index').reset_index().\
               rename(columns={"index": "State", 0: "ID"}).set_index('State')
 
-  df_map = df_map.set_index('entidad').join(states_df, how = 'left')
+  df_map = df_map.set_index('entidad').join(states_df, how = 'left').fillna(value=0)
 
   fig = px.choropleth(df_map, 
                               geojson = 'https://raw.githubusercontent.com/isaacarroyov/data_visualization_practice/master/Python/visualizing_mexican_wildfires_tds/data/states_mx.json', 
@@ -219,15 +235,16 @@ def mapa(df, act = 'Servicios de diseño de sistemas de cómputo y servicios rel
                               color='percentage',
                               color_continuous_scale="Blues",
                               scope="north america",
-                              #title='Demand of Data Jobs per Mexican State',
-                              labels={'percentage':'% del total'},
-                              height= 500,
-                              width = 800                 
+                              title='% total de establecimientos <br> por entidad',
+                              labels={'percentage':'% del total'},           
                               )
-  fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, title_x=0.5, font=dict(size=14))
+  fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, title_x=0.5, title_y=0.85, font=dict(size=11))
   fig.update_geos(fitbounds="locations", visible=False)
+  fig.update(layout_coloraxis_showscale=False)
+ 
+  """
   fig.add_annotation(x=0.5, y=0.1,
-            text=f'La mayor parte de las organizaciones en México <br> se concentran en la capital del país.',
+            text=f'La mayor parte de las <br> organizaciones en México se <br> concentran en la capital del país.',
             showarrow=False,
             yshift=0,
             font=dict(
@@ -235,13 +252,13 @@ def mapa(df, act = 'Servicios de diseño de sistemas de cómputo y servicios rel
             size=10,
             color="Black"
             ))
-
+    """
   return fig
 
 # Histogram
-def histogram(df, act = 'Servicios de diseño de sistemas de cómputo y servicios relacionados'):
+def histogram(df):
   
-  df_hist = df[df['nombre_act'] == act]
+  df_hist = df
 
   palette = ['silver',]*100
   palette.insert(0, px.colors.sequential.Blues_r[0])
@@ -256,8 +273,9 @@ def histogram(df, act = 'Servicios de diseño de sistemas de cómputo y servicio
   fig.update_layout(title_x=0.5, font=dict(size=11))
   fig.update_traces(marker_color=palette)
   fig.update_yaxes(title = "Frecuencia")
-  fig.add_annotation(x=35, y=1200,
-              text=f'La mayor parte de las organizaciones en México tienen <br> de 1 a 5 empleados en promedio.',
+  """
+  fig.add_annotation(x=70, y=1200,
+              text=f'La mayor parte de las <br> organizaciones en México tienen <br> de 1 a 5 empleados en promedio.',
               showarrow=False,
               yshift=0,
               font=dict(
@@ -265,12 +283,13 @@ def histogram(df, act = 'Servicios de diseño de sistemas de cómputo y servicio
               size=10,
               color="Black"
               ))
+  """
   return fig
 
 # Area chart
-def areachart(df, act = 'Servicios de diseño de sistemas de cómputo y servicios relacionados'):
+def areachart(df):
   
-  df_date = df[df['nombre_act'] == act].groupby(by= 'fecha_alta', as_index = False).\
+  df_date = df.groupby(by= 'fecha_alta', as_index = False).\
                 agg(sum_ocu = ('per_ocu_int', 'sum'), mean_ocu = ('per_ocu_int', 'mean'), count = ('entidad','count')).\
                 sort_values(by = 'fecha_alta')
   fig = px.area(df_date, x="fecha_alta", y="mean_ocu",
@@ -281,6 +300,7 @@ def areachart(df, act = 'Servicios de diseño de sistemas de cómputo y servicio
                 )
   fig.update_layout(title_x=0.5, font=dict(size=11))
   fig.update_traces(line_color=px.colors.sequential.Blues_r[0])
+  """
   fig.add_annotation(x='2019-11-01', y=100,
               text=f'Desde el 2017, el número promedio <br>de empleados en organizaciones de <br>servicios prof. y técnicos ha aumentado.',
               showarrow=False,
@@ -290,6 +310,7 @@ def areachart(df, act = 'Servicios de diseño de sistemas de cómputo y servicio
               size=10,
               color="Black"
               ))
+  """
   return fig
 
 
@@ -336,8 +357,8 @@ app.layout = html.Div(children=[
                       
                       #html.Br(),
 
-                      html.P(children='Los servicios técnicos y profesionales en México están concentrados en servicios jurídicos,\
-                           \ny contables. Los servicios en diseño de sistemas de cómputo apenas representan una mínima parte.', style={
+                      html.P(children='La mayor parte de los servicios técnicos y profesionales en México están concentrados en servicios jurídicos\
+                           \ny contables. Los servicios en tecnologías de la información apenas representan una mínima parte.', style={
                           'textAlign': 'center',
                           'color': 'black',
                           'fontFamily': 'Helvetica',
@@ -363,11 +384,11 @@ app.layout = html.Div(children=[
                           html.Div([
                             dcc.Graph(
                               id='barchart',
-                              #figure=barchart(df)
+                              figure=barchart(df)
                             )], 
                              style={'margin-top': '20px',
                                         'margin-left': '10px',
-                                        'width': gwidth, 
+                                        'width': '32%', 
                                         'height': gheight, 
                                         'float': 'center', 
                                        }
@@ -378,10 +399,10 @@ app.layout = html.Div(children=[
                               id='scatter',
                               #figure=scatter(df)
                             )], 
-                            style={'margin-top': margin_top,
-                                        'margin-left': '31%',
-                                        'margin-right': '31%',
-                                        'width': gwidth, 
+                            style={'margin-top': '-450px',
+                                        'margin-left': '33.5%',
+                                        'margin-right': '32%',
+                                        'width': '35%', 
                                         'height': gheight, 
                                         'float': 'center', 
                                        }
@@ -392,8 +413,8 @@ app.layout = html.Div(children=[
                               id='donutchart',
                               #figure=donutchart(df)
                             )], 
-                             style={'margin-top': margin_top,
-                                        'margin-left': '62%',
+                             style={'margin-top': '-450px',
+                                        'margin-left': '69%',
                                         'margin-right': '10px',
                                         'width': gwidth, 
                                         'height': gheight, 
@@ -414,11 +435,11 @@ app.layout = html.Div(children=[
                               #figure=mapa(df)
                               ),
                           ],
-                          style={'margin-top': '20px',
+                          style={'margin-top': '10px',
                                 'margin-left': '10px',
                                 'margin-right': '10px',
                                 'margin-bottom': '10px',
-                                'width': gwidth, 
+                                'width': '32%', 
                                 'height': gheight, 
                                 'float': 'center', 
                                 }
@@ -429,11 +450,11 @@ app.layout = html.Div(children=[
                                   id='histogram',
                                   #figure=histogram(df)
                                 )], 
-                                  style={'margin-top': margin_top,
-                                        'margin-left': '31%',
-                                        'margin-right': '31%',
+                                  style={'margin-top': '-460px',
+                                        'margin-left': '33.5%',
+                                        'margin-right': '32%',
+                                        'width': '35%', 
                                         'margin-bottom': '10px',
-                                        'width': gwidth, 
                                         'height': gheight, 
                                         'float': 'center', 
                                         }
@@ -444,8 +465,8 @@ app.layout = html.Div(children=[
                                   id='areachart',
                                   #figure=areachart(df)
                                 )], 
-                                  style={'margin-top': margin_top,
-                                        'margin-left': '62%',
+                                  style={'margin-top': '-460px',
+                                        'margin-left': '69%',
                                         'margin-right': '10px',
                                         'margin-bottom': '10px',
                                         'width': gwidth, 
@@ -460,9 +481,12 @@ app.layout = html.Div(children=[
                               'overflow': 'hidden',
                               'background-color': 'aliceblue', 
                               })    
-        
+
+# Callback
+
 @app.callback(
-    [Output("barchart", "figure"), 
+    [
+    #Output("barchart", "figure"), 
     Output("scatter", "figure"), 
     Output("donutchart", "figure"),
     Output("mapa", "figure"),
@@ -473,23 +497,24 @@ app.layout = html.Div(children=[
 def update_charts(dropdown):
     
     dff = df.copy()
+    dff2 = df.copy()
 
     dff = dff[dff['nombre_act'] == dropdown]
 
-    fig_bar = barchart(dff)
+    #fig_bar = barchart(dff)
     fig_scatter = scatter(dff)
-    fig_donut = donutchart(df)
+    fig_donut = donutchart(dff2, dropdown)
     fig_map = mapa(dff)
     fig_hist = histogram(dff)
     fig_area = areachart(dff)
 
-    fig_bar.update_layout(transition_duration=500)
+    #fig_bar.update_layout(transition_duration=500)
     fig_scatter.update_layout(transition_duration=500)
     fig_donut.update_layout(transition_duration=500)
     fig_map.update_layout(transition_duration=500)
     fig_hist.update_layout(transition_duration=500)
     fig_area.update_layout(transition_duration=500)
     
-    return fig_bar, fig_scatter, fig_donut, fig_map, fig_hist, fig_area
+    return fig_scatter, fig_donut, fig_map, fig_hist, fig_area
 
 app.run_server(debug=True)
