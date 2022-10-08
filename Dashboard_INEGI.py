@@ -68,7 +68,7 @@ def barchart(df):
               opacity= 0.8,
               labels = {"nombre_act": "Actividad profesional y/o técnica", "count": "Número de organizaciones"}
               )
-  fig.update_layout(title_x=0.5, font=dict(size=10))
+  fig.update_layout(title_x=0.5, font=dict(size=10), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
   fig.update_traces(marker_color=palette, marker_line_color='white', marker_line_width=1)
   """
   fig.add_annotation(x=40000, y=7.5,
@@ -102,7 +102,8 @@ def treemap(df):
   fig.update_traces(root_color="aliceblue")
   fig.update_layout(title_x=0.5, 
                     coloraxis_colorbar=dict(title="Número de <br>Establecimientos"), 
-                    font=dict(size=11))
+                    font=dict(size=11),
+                    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
   return fig
 
 # Scatterplot
@@ -130,6 +131,7 @@ def scatter(df):
   fig.update_layout(title_x=0.5, 
                     font=dict(size=10), 
                     showlegend=False,
+                    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)"
                     )
 
   for index, value in df_org_top.sort_values(by = 'count', ascending = True)['count'].reset_index().iterrows():
@@ -166,9 +168,9 @@ def donutchart(df, act):
 
   fig = px.pie(df_percen, values='total', names='nombre_act', color = 'total', hole = 0.7,  
               title='Porcentaje del total de establecimientos')
-  fig.update_layout(title_x=0.5, font=dict(size=11), showlegend=False)
+  fig.update_layout(title_x=0.5, font=dict(size=11), showlegend=False, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
   fig.update_traces(hoverinfo='label+percent+name', textinfo='percent', textfont_size=14,
-                      marker=dict(colors=colors, line=dict(color='white', width=4)))
+                      marker=dict(colors=colors, line=dict(color="rgba(0,0,0,0)", width=4)))
   """
   fig.add_annotation(x=1.35, y=0.5,
               text=f'Las organizaciones de <br> {act} <br> representaron el {percentage:.0f}% de las organizaciones <br>oferentes de servicios profesionales y <br>técnicos en México.',
@@ -238,7 +240,8 @@ def mapa(df):
                               title='% total de establecimientos <br> por entidad',
                               labels={'percentage':'% del total'},           
                               )
-  fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, title_x=0.5, title_y=0.85, font=dict(size=11))
+  fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, title_x=0.5, title_y=0.85, font=dict(size=11), 
+                  paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", geo_bgcolor = "rgba(0,0,0,0)")
   fig.update_geos(fitbounds="locations", visible=False)
   fig.update(layout_coloraxis_showscale=False)
  
@@ -270,7 +273,7 @@ def histogram(df):
                                     },
                             title='Distribución del número de empleados',
                             )
-  fig.update_layout(title_x=0.5, font=dict(size=11))
+  fig.update_layout(title_x=0.5, font=dict(size=11), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
   fig.update_traces(marker_color=palette)
   fig.update_yaxes(title = "Frecuencia")
   """
@@ -298,7 +301,7 @@ def areachart(df):
                         },
                 title='Promedio de empleados a lo largo del tiempo',
                 )
-  fig.update_layout(title_x=0.5, font=dict(size=11))
+  fig.update_layout(title_x=0.5, font=dict(size=11), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
   fig.update_traces(line_color=px.colors.sequential.Blues_r[0])
   """
   fig.add_annotation(x='2019-11-01', y=100,
